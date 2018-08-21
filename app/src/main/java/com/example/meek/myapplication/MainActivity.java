@@ -1,12 +1,17 @@
 package com.example.meek.myapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -79,6 +84,47 @@ public class MainActivity extends AppCompatActivity {
         jsonArray = new JSONArray();
         mAdapter = new MyAdapter(jsonArray);
         mRecyclerView.setAdapter(mAdapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        ShareCompat.IntentReader intentReader = ShareCompat.IntentReader.from(this);
+        if (intentReader.isShareIntent()) {
+            editText.setText(intentReader.getText());
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.refresh_menu_item:
+                fetchData();
+                return true;
+            case R.id.share_menu_item:
+                shareText();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void shareText() {
+        Intent shareIntent = ShareCompat.IntentBuilder.from(this)
+                .setType("text/plain")
+                .setText(editText.getText().toString())
+                .getIntent();
+        if (shareIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(shareIntent);
+        }
     }
 
     private void fetchData() {
