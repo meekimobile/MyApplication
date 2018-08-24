@@ -84,6 +84,18 @@ public class MainActivity extends AppCompatActivity {
         jsonArray = new JSONArray();
         mAdapter = new MyAdapter(jsonArray);
         mRecyclerView.setAdapter(mAdapter);
+
+        // Restore state.
+        if (savedInstanceState != null) {
+            editText.setText(savedInstanceState.getString("editText"));
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString("editText", editText.getText().toString());
     }
 
     @Override
